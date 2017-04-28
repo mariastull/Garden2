@@ -1,4 +1,5 @@
 package garden.relogo
+//package uchicago.src.sim.util.Random
 
 import static repast.simphony.relogo.Utility.*;
 import static repast.simphony.relogo.UtilityG.*;
@@ -11,6 +12,8 @@ import garden.ReLogoObserver;
 
 class UserObserver extends ReLogoObserver{
 
+	//Random.createUniform();
+	
 	/**
 	 * Add observer methods here. For example:
 
@@ -41,12 +44,26 @@ class UserObserver extends ReLogoObserver{
 	def setup(){
 		clearAll()
 		setDefaultShape(Plant, "plant")
-		createPlants(numPlants){
-			setxy(randomXcor(), randomYcor())
-			setColor(green())
+		for (int a= -10; a< 11; a+=5)
+		{
+			for (int b=minPycor; b<maxPycor; b++)
+			{
+				if (b==0 || b==-8 || b==8){
+					b+=1
+				}
+				
+				createPlants(1){
+					setxy(a,b)
+					setColor(green())
+				}
+			}
 		}
+		//createPlants(numPlants){
+			//setxy(randomXcor(), randomYcor())
+			//setColor(green())
+		//}
 		setDefaultShape(Rabbit, "rabbit")
-		createRabbits(numRabbits){
+		createRabbits(1){
 			setxy(randomXcor(), randomYcor())
 			setColor(white())
 			size = 2
@@ -60,10 +77,19 @@ class UserObserver extends ReLogoObserver{
 		ask(patches())
 		{setPcolor(22)
 		}
+		//int plantsLeft = count(plants())
 	}
 	
 	@Go
 	def go(){
+		int x = (int) Math.floor(Math.random() * 501)
+		if (x<numRabbits){
+			createRabbits(1){
+				setxy(randomXcor(), randomYcor())
+				setColor(white())
+				size = 2
+			}
+		}
 		ask(rabbits()){
 			step()
 		}
@@ -73,10 +99,16 @@ class UserObserver extends ReLogoObserver{
 		ask(gardeners()){
 			step()
 		}
+		//plantsLeft=count(plants())
 	}
 	
-	def remainingPlants(){
+	
+	
+	def plantsLeft(){
 		count(plants())
+		//System.out.println(count(plants()))
+		//return plantsLeft
+		//System.out.print(remainingPlants)
 	}
 	
 }

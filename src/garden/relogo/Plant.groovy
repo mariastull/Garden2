@@ -14,14 +14,10 @@ import repast.simphony.relogo.schedule.Setup;;
 class Plant extends ReLogoTurtle {
 	
 	def eaten = false
-	def infectionTime = 0
 	
 	def step(){
 		if(eaten){
-			infectionTime++
-			if (infectionTime >= gestationPeriod){
-				die()
-			}
+			die()
 		}
 	}
 	

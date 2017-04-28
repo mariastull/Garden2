@@ -17,18 +17,27 @@ class Gardener extends ReLogoTurtle {
 			count(rabbitsOn(it))
 		}
 		face (winner)
-		forward(0.75)
+		forward(0.55)
 		if (count(rabbitsHere()) > 0) {
 			//label = ""
 			def pest = oneOf(rabbitsHere())
 			capture(pest)
 		}
-		//else {
-			//label = ""
-		//}
+		if (count(plantsHere()) > 0) {
+			label = "Oops"
+			def blunder = oneOf(plantsHere())
+			step_on(blunder)
+		}
+		else{
+			label = ""
+		}
 	}
 	
 	def capture(Rabbit rabbit){
 		rabbit.caught = true
+	}
+	
+	def step_on(Plant plant){
+		plant.eaten = true
 	}
 }
