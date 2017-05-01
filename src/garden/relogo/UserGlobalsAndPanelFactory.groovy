@@ -23,11 +23,21 @@ public class UserGlobalsAndPanelFactory extends AbstractReLogoGlobalsAndPanelFac
 	        addStateChangeButtonWL("changeSomething","Change Something")
 	        
 		 */
+		//def static Q = [:]
+		//Q.put("apple": 3)
 		
+		//addGlobal("Q", [:])
+		//Q["apple"] = 0.3
+		addGlobal("prev_plants", 145)
+		addGlobal("time", 0)
+		addGlobal("days", 0)
+		addGlobal("calendar", 25)
+		//def prev_plants = 145
 		//addSliderWL("numPlants", "Number of Plants", 1, 1, 100, 50)
 		addSliderWL("numGardeners", "Number of Gardeners", 1, 1, 10, 5)
 		addSliderWL("numRabbits", "Rabbit frequency", 1, 1, 10, 5)
-		addMonitorWL("plantsLeft", "Remaining Plants", 5)
+		addMonitorWL("plantsLeft", "Remaining Plants", 1)
+		addMonitorWL("days", "Day", 20)
 
 	}
 }

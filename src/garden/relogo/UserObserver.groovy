@@ -13,6 +13,10 @@ import garden.ReLogoObserver;
 class UserObserver extends ReLogoObserver{
 
 	//Random.createUniform();
+	def fout = new PrintWriter("output.txt")
+	//
+	//writer.println("The second line");
+	//writer.close();
 	
 	/**
 	 * Add observer methods here. For example:
@@ -43,6 +47,7 @@ class UserObserver extends ReLogoObserver{
 	@Setup
 	def setup(){
 		clearAll()
+		
 		setDefaultShape(Plant, "plant")
 		for (int a= -10; a< 11; a+=5)
 		{
@@ -68,11 +73,14 @@ class UserObserver extends ReLogoObserver{
 			setColor(white())
 			size = 2
 		}
+		def Qtable = [:]
+		Qtable["apple"] = 0.3
 		setDefaultShape(Gardener, "person")
 		createGardeners(numGardeners){
 			setxy(randomXcor(), randomYcor())
 			setColor(blue())
 			size = 2
+			setQ(Qtable)
 		}
 		ask(patches())
 		{setPcolor(22)
@@ -82,27 +90,75 @@ class UserObserver extends ReLogoObserver{
 	
 	@Go
 	def go(){
-		int x = (int) Math.floor(Math.random() * 501)
-		if (x<numRabbits){
-			createRabbits(1){
-				setxy(randomXcor(), randomYcor())
-				setColor(white())
-				size = 2
+		if (time==1500){
+			fout.println(days + "," + plantsLeft())
+			days +=1
+			if (days==calendar){
+				fout.close()
+				pause()
 			}
+			else{
+				ask(rabbits()){
+					die()
+				}
+				ask(plants()){
+					die()
+				}
+				for (int a= -10; a< 11; a+=5)
+				{
+					for (int b=minPycor; b<maxPycor; b++)
+					{
+						if (b==0 || b==-8 || b==8){
+							b+=1
+						}
+						
+						createPlants(1){
+							setxy(a,b)
+							setColor(green())
+						}
+					}
+				}
+				createRabbits(1){
+					setxy(randomXcor(), randomYcor())
+					setColor(white())
+					size = 2
+				}
+				
+			}
+			time = 0
 		}
-		ask(rabbits()){
-			step()
+		else
+		{
+			int x = (int) Math.floor(Math.random() * 501)
+			if (x<numRabbits){
+				createRabbits(1){
+					setxy(randomXcor(), randomYcor())
+					setColor(white())
+					size = 2
+				}
+			}
+			ask(rabbits()){
+				step()
+			}
+			ask(plants()){
+				step()
+			}
+			ask(gardeners()){
+				step()
+			}
+			def total_reward = (prev_plants - count(plants())) * -0.01
+			ask(gardeners()){
+				update_Q(total_reward)
+				clear_reward()
+			}
+			prev_plants = count(plants())
+			time += 1
 		}
-		ask(plants()){
-			step()
-		}
-		ask(gardeners()){
-			step()
-		}
-		//plantsLeft=count(plants())
 	}
 	
-	
+	def days(){
+		return days
+	}
 	
 	def plantsLeft(){
 		count(plants())
