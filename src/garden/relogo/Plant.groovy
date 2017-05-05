@@ -14,7 +14,7 @@ import repast.simphony.relogo.schedule.Setup;;
 class Plant extends ReLogoTurtle {
 	
 	def eaten = false
-	
+	//Plants die if they have been eaten (or stepped on)
 	def step(){
 		if(eaten){
 			die()

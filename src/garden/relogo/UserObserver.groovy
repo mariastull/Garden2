@@ -12,43 +12,15 @@ import garden.ReLogoObserver;
 
 class UserObserver extends ReLogoObserver{
 
-	//Random.createUniform();
 	def fout = new PrintWriter("output.txt")
 	def Random randomizer = new Random()
-	//
-	//writer.println("The second line");
-	//writer.close();
 	
-	/**
-	 * Add observer methods here. For example:
-
-		@Setup
-		def setup(){
-			clearAll()
-			createTurtles(10){
-				forward(random(10))
-			}
-		}
-		
-	 *
-	 * or
-	 * 	
 	
-		@Go
-		def go(){
-			ask(turtles()){
-				left(random(90))
-				right(random(90))
-				forward(random(10))
-			}
-		}
-
-	 */
 
 	@Setup
 	def setup(){
 		clearAll()
-		
+		//Create plants in rows
 		setDefaultShape(Plant, "plant")
 		for (int a= -10; a< 11; a+=5)
 		{
@@ -64,16 +36,14 @@ class UserObserver extends ReLogoObserver{
 				}
 			}
 		}
-		//createPlants(numPlants){
-			//setxy(randomXcor(), randomYcor())
-			//setColor(green())
-		//}
+		//Create one rabbit, to start with
 		setDefaultShape(Rabbit, "rabbit")
 		createRabbits(1){
 			setxy(randomXcor(), randomYcor())
 			setColor(white())
 			size = 2
 		}
+		//Define q-table; create gardeners and pass q-table to them
 		def Qtable = [:]
 		setDefaultShape(Gardener, "person")
 		createGardeners(numGardeners){
@@ -82,18 +52,21 @@ class UserObserver extends ReLogoObserver{
 			size = 1
 			setQ(Qtable)
 		}
+		//Set the background to brown
 		ask(patches())
 		{setPcolor(22)
 		}
-		//int plantsLeft = count(plants())
 	}
 	
 	@Go
 	def go(){
+		//At first tick of first day, output settings for the current run
 		if(days==0 && time==0){
 			fout.println("alg: " + alg + "\nRabbit Reward: " + rabbit_reward + "\nPlant Reward: " + plant_reward + "\nToward Rabbit: " + toward_rabbit_reward + "\nRabbit Movement: " + rabbit_move + "\nGardeners: " + numGardeners)
 		}
+		//At the end of a day, reset
 		if (time==1500){
+			//Output data about current run and reset variables
 			fout.println(days + "," + plantsLeft() + "," + rabbitsCaught + "," + plantsSquished)
 			rabbitsCaught = 0
 			plantsSquished = 0
@@ -102,6 +75,7 @@ class UserObserver extends ReLogoObserver{
 				fout.close()
 				pause()
 			}
+			//Reset all plants; remove all rabbits and add one new one
 			else{
 				ask(rabbits()){
 					die()
@@ -134,6 +108,7 @@ class UserObserver extends ReLogoObserver{
 		}
 		else
 		{
+			//Creates a rabbit occasionally (determined by frequency slider)
 			int x = randomizer.next(11)
 			if (x<numRabbits){
 				createRabbits(1){
@@ -142,6 +117,7 @@ class UserObserver extends ReLogoObserver{
 					size = 2
 				}
 			}
+			//Move all agents
 			try{
 			ask(rabbits()){
 				step()
@@ -153,7 +129,9 @@ class UserObserver extends ReLogoObserver{
 			ask(gardeners()){
 				step()
 			}
+			//Currently not doing anything; could punish gardeners for having rabbits on the board
 			def total_reward = (prev_plants - count(plants())) * 0
+			//Update q-table
 			ask(gardeners()){
 				update_Q(total_reward)
 				clear_reward()
@@ -169,9 +147,6 @@ class UserObserver extends ReLogoObserver{
 	
 	def plantsLeft(){
 		count(plants())
-		//System.out.println(count(plants()))
-		//return plantsLeft
-		//System.out.print(remainingPlants)
 	}
 	
 }

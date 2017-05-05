@@ -23,21 +23,14 @@ public class UserGlobalsAndPanelFactory extends AbstractReLogoGlobalsAndPanelFac
 	        addStateChangeButtonWL("changeSomething","Change Something")
 	        
 		 */
-		//def static Q = [:]
-		//Q.put("apple": 3)
-		
-		//addGlobal("Q", [:])
-		//Q["apple"] = 0.3
-		addGlobal("prev_plants", 145)
-		addGlobal("time", 0)
-		addGlobal("days", 0)
-		//addGlobal("calendar", 300)
-		addGlobal("rabbitsCaught", 0)
-		addGlobal("plantsSquished", 0)
-		//def prev_plants = 145
-		//addSliderWL("numPlants", "Number of Plants", 1, 1, 100, 50)
-		addMonitorWL("plantsLeft", "Remaining Plants", 1)
-		addMonitorWL("days", "Day", 20)
+		//Global variables, and sliders
+		addGlobal("prev_plants", 145)	//number of plants in previous timestep
+		addGlobal("time", 0)	//tick for the current day
+		addGlobal("days", 0)	//number of days total
+		addGlobal("rabbitsCaught", 0)	//number of rabbits caught by gardeners
+		addGlobal("plantsSquished", 0)	//number of plants squished by gardeners
+		addMonitorWL("plantsLeft", "Remaining Plants", 1)	//number of plants remaining in environment
+		addMonitorWL("days", "Day", 20)	//which day is it in the current run
 
 		addChooser("alg", ["Epsilon Greedy", "Softmax"], 0)
 		addSliderWL("rabbit_reward", "Reward: Catching Rabbit", -50, 1, 50, 10)

@@ -15,6 +15,8 @@ class Rabbit extends ReLogoTurtle {
 
 	def caught = false
 	
+	//Rabbits move toward a plant if they are near one, eat a plant if they are 
+	//adjacent to it, and die if someone catches them
 	def step(){
 		if(caught){
 			label = ":("
@@ -23,15 +25,14 @@ class Rabbit extends ReLogoTurtle {
 		def winner = maxOneOf(neighbors()){
 			count(plantsOn(it))
 		}
+		try{
 		face (winner)
-		forward(((float) rabbit_move)/ 100)
+		forward(((float) rabbit_move)/ 100)}
+		catch (IllegalArgumentException){}
 		if (count(plantsHere()) > 0) {
 			label = "Nom"
 			def snack = oneOf(plantsHere())
 			eat(snack)
-		}
-		else {
-			label = "" //(" + getXcor() + " " + getYcor() +")"
 		}
 	}
 	
