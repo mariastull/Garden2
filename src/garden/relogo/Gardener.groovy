@@ -15,22 +15,37 @@ import Random
 
 class Gardener extends ReLogoTurtle {
 	def Map Qtable
+	def epsilon_greedy = true
 	def reward = 0
-	def alpha = 0.5
+	def alpha = 0.8
 	def gamma = 0.9
-	def epsilon = 0.005
+	def epsilon = 0.5
+	def final_epsilon = 0.05
 	def lastState = ""
 	def neighborsList = []
 	def newState = []
+	def rabbitNear = 0
+	def tau = 0.1
+	def e = 2.71828
+	
+	
+	//def rabbitReward = 50 
+	//def plantReward = -10
+	//def towardRabbitReward = 5
 	Random rand = new Random()
 	
 	def step(){
+		if (days>=5){
+			epsilon = final_epsilon
+		}
 		neighborsList = getSurroundings()
-		facexy(getXcor(), minPycor)
+		facexy(getXcor(), getYcor()+1)
+		def heading =0
+	if (alg == "Epsilon Greedy"){
 		def bestDir = 0
 		def bestVal = -100
 		def curVal = 0
-		def heading =0
+		
 		//def otherVals = [0, 1, 2, 3, 4, 5, 6, 7]
 		for (int a=0; a<8; a++){
 			neighborsList.add(a)
@@ -40,14 +55,16 @@ class Gardener extends ReLogoTurtle {
 			else{
 				curVal = 0
 			}
-			neighborsList.remove(9)
-			if (curVal>bestVal){
+			//System.out.println(curVal + " "+ a)
+			neighborsList.remove(11)
+			if (curVal>bestVal && Math.abs(curVal-bestVal) > 0.0005){
 				bestVal = curVal
 				bestDir = a
 			}
 		}
 		def explore = rand.nextFloat()
 		//System.out.println("explore (0-1) "+ explore)
+		
 		if (explore>=epsilon){
 			heading = bestDir
 			neighborsList.add(bestDir)
@@ -61,40 +78,87 @@ class Gardener extends ReLogoTurtle {
 			neighborsList.add(num)
 			right(45*num)
 			//System.out.println("rotating " + 45*num)
+		}}
+//SOFTMAX
+		else {
+	
+	// Expected reward for each action
+	def vals = [:]
+	def etotal = 0
+	def qval = 0
+	for (int a=0; a<8; a++)
+	{
+		neighborsList.add(a)
+		if (Qtable.containsKey(neighborsList.toString())){
+			qval = Qtable[neighborsList.toString()]	
 		}
+		else{
+			qval = 0
+		}
+		//System.out.println(qval +" " + a)
+		def toadd =  Math.pow(e, (qval/tau))
+		etotal += toadd
+		vals[a] = toadd
+		neighborsList.remove(11)
+	}
+	def explore = rand.nextFloat()
+	
+	def probs = [:]
+	
+	for (int a=0; a<8; a++){
+		probs[a] = vals[a]/etotal
+	}
+	
+	def choose = rand.nextFloat()
+	def probs_found = 0
+	def cur =0
+	for (int a=1; a<8; a++){
+		probs_found += probs[a]
+		if (probs_found < choose){
+			heading++
+		}
+	}
+		neighborsList.add(heading)
+		right(45*heading)
+		}
+		//label = "hello"
+
 		//neighborsList.add(heading)
 		if(heading==neighborsList[8])
 		{
-			reward += 0.02
+			reward += toward_rabbit_reward
+			//label = "bonus"
+			//System.out.println("bonus " + heading)
 		}
+		//else{
+			//label = neighborsList.toString() 
+		//}
 		lastState = neighborsList.toString()
 		//System.out.println("heading " + getHeading())
 		
 		
 		
-		//Q["apple"] = 0.3
-		/*System.out.println(Qtable["apple"])
-		//System.out.println(thisVariable)
+		/*
 		def winner = maxOneOf(neighbors()){
 			count(rabbitsOn(it))
 		}
 		face (winner)*/
 		forward(0.55)
+		label = ""
 		if (count(rabbitsHere()) > 0) {
-			//label = ""
-			reward += 0.5
+			label = "Gotchya"
+			reward += rabbit_reward
 			def pest = oneOf(rabbitsHere())
 			capture(pest)
 		}
 		if (count(plantsHere()) > 0) {
 			label = "Oops"
-			reward -= 0.1
+			reward += plant_reward
 			def blunder = oneOf(plantsHere())
 			step_on(blunder)
 		}
-		else{
-			label = ""
-		}
+		//facexy(0,0)
+		facexy(getXcor(), getYcor()+1)
 		newState = getSurroundings()
 	}
 	
@@ -124,7 +188,7 @@ class Gardener extends ReLogoTurtle {
 			else{
 				curVal = 0
 			}
-			newState.remove(9)
+			newState.remove(11)
 			if (curVal>bestVal){
 				bestVal = curVal
 			}
@@ -161,7 +225,27 @@ class Gardener extends ReLogoTurtle {
 			}
 		}
 		neighborsList.add(dir)
+		//System.out.println(minDist)
+		if (minDist <= 2){
+			rabbitNear = 1
+		//	System.out.println("rabbit near")
+		}
+		else{
+			if (minDist<=8){
+				rabbitNear = 2
+				//System.out.println("rabbit kinda near")
+			}
+			else{
+				rabbitNear = 0
+			}
+		}
 	//	System.out.println("shouldb " + neighborsList)
+		neighborsList.add(rabbitNear)
+		def rabbits_on_board = 0
+		if (count(rabbits()) > 0){
+			rabbits_on_board =1
+		}
+		neighborsList.add(rabbits_on_board)
 		return neighborsList
 		
 	}
@@ -196,10 +280,12 @@ class Gardener extends ReLogoTurtle {
 	}
 	
 	def capture(Rabbit rabbit){
+		rabbitsCaught+=1
 		rabbit.caught = true
 	}
 	
 	def step_on(Plant plant){
+		plantsSquished+=1
 		plant.eaten = true
 	}
 }

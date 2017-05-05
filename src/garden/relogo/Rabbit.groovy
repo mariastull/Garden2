@@ -24,14 +24,14 @@ class Rabbit extends ReLogoTurtle {
 			count(plantsOn(it))
 		}
 		face (winner)
-		forward(0.5)
+		forward(((float) rabbit_move)/ 100)
 		if (count(plantsHere()) > 0) {
 			label = "Nom"
 			def snack = oneOf(plantsHere())
 			eat(snack)
 		}
 		else {
-			label = ""
+			label = "" //(" + getXcor() + " " + getYcor() +")"
 		}
 	}
 	

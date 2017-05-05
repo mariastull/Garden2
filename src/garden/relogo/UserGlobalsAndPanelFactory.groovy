@@ -31,13 +31,23 @@ public class UserGlobalsAndPanelFactory extends AbstractReLogoGlobalsAndPanelFac
 		addGlobal("prev_plants", 145)
 		addGlobal("time", 0)
 		addGlobal("days", 0)
-		addGlobal("calendar", 25)
+		//addGlobal("calendar", 300)
+		addGlobal("rabbitsCaught", 0)
+		addGlobal("plantsSquished", 0)
 		//def prev_plants = 145
 		//addSliderWL("numPlants", "Number of Plants", 1, 1, 100, 50)
-		addSliderWL("numGardeners", "Number of Gardeners", 1, 1, 10, 5)
-		addSliderWL("numRabbits", "Rabbit frequency", 1, 1, 10, 5)
 		addMonitorWL("plantsLeft", "Remaining Plants", 1)
 		addMonitorWL("days", "Day", 20)
+
+		addChooser("alg", ["Epsilon Greedy", "Softmax"], 0)
+		addSliderWL("rabbit_reward", "Reward: Catching Rabbit", -50, 1, 50, 10)
+		addSliderWL("plant_reward", "Reward: Step on Plant", -50, 1, 50, -5)
+		addSliderWL("toward_rabbit_reward", "Reward: Go Toward Rabbit", -50, 1, 50, 1)
+		addSliderWL("rabbit_move", "Rabbit Movement", 0, 1, 50, 20)
+		addSliderWL("numGardeners", "Number of Gardeners", 1, 1, 10, 5)
+		addSliderWL("calendar", "Number of Days", 0, 25, 1000, 200)
+		addSliderWL("numRabbits", "Rabbit frequency", 1, 1, 50, 5)
+		
 
 	}
 }

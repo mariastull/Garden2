@@ -14,6 +14,7 @@ class UserObserver extends ReLogoObserver{
 
 	//Random.createUniform();
 	def fout = new PrintWriter("output.txt")
+	def Random randomizer = new Random()
 	//
 	//writer.println("The second line");
 	//writer.close();
@@ -74,12 +75,11 @@ class UserObserver extends ReLogoObserver{
 			size = 2
 		}
 		def Qtable = [:]
-		Qtable["apple"] = 0.3
 		setDefaultShape(Gardener, "person")
 		createGardeners(numGardeners){
 			setxy(randomXcor(), randomYcor())
 			setColor(blue())
-			size = 2
+			size = 1
 			setQ(Qtable)
 		}
 		ask(patches())
@@ -90,8 +90,13 @@ class UserObserver extends ReLogoObserver{
 	
 	@Go
 	def go(){
+		if(days==0 && time==0){
+			fout.println("alg: " + alg + "\nRabbit Reward: " + rabbit_reward + "\nPlant Reward: " + plant_reward + "\nToward Rabbit: " + toward_rabbit_reward + "\nRabbit Movement: " + rabbit_move + "\nGardeners: " + numGardeners)
+		}
 		if (time==1500){
-			fout.println(days + "," + plantsLeft())
+			fout.println(days + "," + plantsLeft() + "," + rabbitsCaught + "," + plantsSquished)
+			rabbitsCaught = 0
+			plantsSquished = 0
 			days +=1
 			if (days==calendar){
 				fout.close()
@@ -129,7 +134,7 @@ class UserObserver extends ReLogoObserver{
 		}
 		else
 		{
-			int x = (int) Math.floor(Math.random() * 501)
+			int x = randomizer.next(11)
 			if (x<numRabbits){
 				createRabbits(1){
 					setxy(randomXcor(), randomYcor())
@@ -137,16 +142,18 @@ class UserObserver extends ReLogoObserver{
 					size = 2
 				}
 			}
+			try{
 			ask(rabbits()){
 				step()
-			}
+			}}
+			catch(IllegalArgumentException){}
 			ask(plants()){
 				step()
 			}
 			ask(gardeners()){
 				step()
 			}
-			def total_reward = (prev_plants - count(plants())) * -0.01
+			def total_reward = (prev_plants - count(plants())) * 0
 			ask(gardeners()){
 				update_Q(total_reward)
 				clear_reward()
@@ -157,7 +164,7 @@ class UserObserver extends ReLogoObserver{
 	}
 	
 	def days(){
-		return days
+		return days+1
 	}
 	
 	def plantsLeft(){
